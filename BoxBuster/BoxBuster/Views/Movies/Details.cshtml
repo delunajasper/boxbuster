@@ -1,0 +1,17 @@
+﻿@model BoxBuster.Models.Movie
+
+
+@{
+    ViewBag.Title = "Model.Name";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+<ul>
+    <li>Release: @Model.Release.ToLongDateString()</li>
+    <li>Published: @Model.DateAdded.ToLongDateString()</li>
+    <li>Genre: @Model.Genre.Name</li>
+    <li>Stock: @Model.Stock</li>
+
+</ul>
+

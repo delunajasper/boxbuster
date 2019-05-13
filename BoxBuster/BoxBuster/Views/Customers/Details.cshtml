@@ -1,0 +1,15 @@
+﻿@model BoxBuster.Models.Customer
+@{
+    ViewBag.Title = "Model.Name";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+<ul>
+    <li>Memberships: @Model.MembershipType.Name</li>
+    @if (Model.DoB.HasValue)
+    {
+        <li>DateOfBirth: @Model.DoB.Value.ToShortDateString()</li>
+    }
+</ul>
+

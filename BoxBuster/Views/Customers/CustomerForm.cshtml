@@ -1,0 +1,62 @@
+﻿@using System.Web.UI.WebControls
+@model BoxBuster.ViewModels.NewCustomerViewModel
+@{
+    ViewBag.Title = "New Customer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Customer</h2>
+
+@using (Html.BeginForm("Create", "Customers"))
+{
+    @Html.ValidationSummary(true, "Amend errors")
+    @Html.HiddenFor(m => m.Customer.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Name)
+        @Html.TextBoxFor(m => m.Customer.Name, new {@class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.Name)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Phone)
+        @Html.TextBoxFor(m => m.Customer.Phone, new {@class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.Phone)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Email)
+        @Html.TextBoxFor(m => m.Customer.Email, new {@class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.Email)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.DoB)
+        @Html.TextBoxFor(m => m.Customer.DoB,"{0:d MMM yyyy}", new {@class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.DoB)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.MembershipTypeId)
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId, new SelectList(Model.MembershipTypes, "Id","Name"), "Select types", new {@class = "form-control"})
+        @Html.ValidationMessageFor(m => m.Customer.MembershipTypeId)
+    </div>
+
+    <div class="checkbox">
+        <label>
+            @Html.CheckBoxFor(m => m.Customer.Subscription) Check me
+        </label>
+    </div>
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Send</button>
+
+
+
+
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

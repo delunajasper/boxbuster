@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BoxBuster.Models.Customer>
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*this is for users with less priveleges; removes CRUD fnctions.*@
+<h2>Customers</h2>
+
+<table id="customers" class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th>Customers</th>
+        <th>Memberships</th>
+       </tr>
+    </thead>
+    <tbody>
+    @*@foreach (var customer in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(customer.Name, "Edit", "Customers", new {id = customer.Id}, null)
+                </td>
+                <td>@customer.MembershipType.Name</td>
+                <td>
+                    <button data-customer-id="@customer.Id" class="btn-link jquery-delete">Delete</button>
+                </td>
+            </tr>
+        }*@
+    </tbody>
+</table>
+
+@section scripts
+{
+
+    <script>
+        //insert datatables here before click funtion
+        //feed customers api to datatable
+        //customers property is source data; set to empty string
+        //response from Api is array of objects
+        //after ajax columns property; and supply object 1st col - customer name with render function.
+        //2nd col comes from membershipType
+        //3rd col comes from Id to render a button with render function containing Id prop
+
+        $(document).ready(function () {
+            var table = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "membershipType.name"
+                    }
+                ]
+            });
+           });
+    </script>
+}

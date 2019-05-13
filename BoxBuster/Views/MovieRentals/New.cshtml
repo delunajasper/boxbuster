@@ -1,0 +1,170 @@
+﻿@model BoxBuster.Models.MovieRental
+@{
+    ViewBag.Title = "Rent-A-Movie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<h2>Rent-A-Movie</h2>
+<h4>Find customer and add movies.</h4>
+<hr/>
+
+<form id="rental">
+    <!--search customer-->
+    <div class="form-group">
+        <label>Search Customer</label>
+        <div class="tt-container">
+            <input id="customer" name="customer" data-rule-validInput="true" required type="text" value="" class="form-control"/>
+        </div>
+    </div>
+    
+    <!--movie search-->
+    <div class="form-group">
+        <label>Search Movie</label>
+        <div class="tt-container">
+            <input id="movie" name="movie" data-rule-insertMovie="true" type="text" value="" class="form-control"/>
+        </div>
+    </div>
+    
+    <!--movies selected-->
+    <div class="row">
+        <div class="col-md-4 col-sm-4">
+            <ul id="movies" class="list-group"></ul>
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Send</button>
+
+</form>
+
+<br/>
+
+
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+
+            //var table = $("#customMovies").DataTable({
+            //    ajax: {
+            //        url: "/api/movieRentals",
+            //        dataSrc: ""
+            //    },
+            //    columns: [
+            //        {
+            //            data: "name",
+            //            render: function (data) {
+            //                return  customer.id;
+            //            }
+            //        },
+            //        {
+            //            data: "movie.id"
+            //        },
+            //        {
+            //            data: "movieRental.R",
+
+            //        }
+            //    ]
+            //});
+
+
+            var viewmodel = {
+                movieId: [] //empty array to push movieId objects
+            };
+            
+            //customer searchbox with typeahead plugin
+            var customers = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/customers?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#customer').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                name: 'customers',
+                display: 'name',
+                source: customers
+            }).on("typeahead:select", function(e, customer) {
+                viewmodel.customerId = customer.id;
+            });
+
+            //movie search with typeahead plugin
+
+            var movies = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                    url: '/api/movies?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+         
+            
+
+            $('#movie').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                name: 'movies',
+                display: 'name',
+                source: movies
+            }).on("typeahead:select", function (e, movie) {
+                $("#movies").append("<li class='list-group-item'>" + movie.name + "</li>");
+
+                $("#movie").typeahead("val", "");
+                //add movies to viewmodel
+                viewmodel.movieId.push(movie.id);
+            });
+            
+            $.validator.addMethod("validInput",
+                function() {
+                    return viewmodel.customerId && viewmodel.customerId !== 0;
+                }, "Only valid customers");
+
+            $.validator.addMethod("insertMovie",
+                function() {
+                    return viewmodel.movieId.length > 0;
+                },
+                "Select a movie");
+           
+
+          var validator =  $("#rental").validate({
+                submitHandler: function() {
+                    $.ajax({
+                            url: "/api/movieRentals",
+                            method: "post",
+                            data: viewmodel
+                        })
+                        .done(function () {
+                            //test here console.log("success");
+                            toastr.success("Rentals recorded!");
+
+                            //clear form
+                            $("#customer").typeahead("val", "");
+                            $("#movie").typeahead("val", "");
+                            $("#movies").empty();
+
+                            viewmodel = { movieId: [] };
+
+                            validator.resetForm();
+
+                        })
+                        .fail(function () {
+                            toastr.error("Error, please report to Admin.");
+
+                        });
+                    return false;
+                }
+            });
+
+     });
+    </script>
+}
